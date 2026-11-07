@@ -528,6 +528,15 @@ defmodule Ash.Test.Actions.GenericActionsTest do
                |> Ash.run_action!()
     end
 
+    test "generic actions don't apply argument defaults to an explicit nil" do
+      for value <- [nil, ""] do
+        assert {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Changes.Required{field: :name}]}} =
+                 Post
+                 |> Ash.ActionInput.for_action(:hello_with_default, %{name: value})
+                 |> Ash.run_action()
+      end
+    end
+
     test "generic actions don't accept unknown keys" do
       assert {:error, %Ash.Error.Invalid{}} =
                Post
