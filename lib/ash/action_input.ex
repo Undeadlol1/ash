@@ -507,11 +507,12 @@ defmodule Ash.ActionInput do
     input.action.arguments
     |> Enum.reject(&is_nil(&1.default))
     |> Enum.reduce(input, fn argument, input ->
+      # Only omitted arguments get the default; an explicit nil stays nil, as in changesets.
       case fetch_argument(input, argument.name) do
-        {:ok, value} when not is_nil(value) ->
+        {:ok, _} ->
           input
 
-        _ ->
+        :error ->
           if argument.name in input.invalid_keys do
             input
           else
